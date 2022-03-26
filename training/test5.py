@@ -6,6 +6,8 @@ img = cv2.imread('../images/forTheEmail.jpg', 1)
 img = cv2.resize(img, (0,0), fx=0.75, fy=0.75)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+print(img)
+
 corners = cv2.goodFeaturesToTrack(img, 100, 0.4, 10) # 100 - max corners, 0.01 - kolko tochni da sa, 10 - min razstoqnie mejdu tqh
 corners = np.int0(corners) #prevtyshta gi v int
 
