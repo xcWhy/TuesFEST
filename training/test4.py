@@ -9,7 +9,7 @@ while True:
     height = int(cap.get(4))
 
     img = cv2.rectangle(frame, (100, 100), (200, 200), (128, 128, 128), 5)
-    img = cv2.circle(frame, (300, 300), 60, (0, 0, 255), -1) #kogato e -1, zapylva figurata s cveta izcqlo
+    img = cv2.circle(frame, (300, 300), 60, (0, 0, 255), -1) #kogato e -1, zapylva figurata s cveta izcqlo, 60 - radius
     font = cv2.FONT_ITALIC
     img = cv2.putText(frame, 'Show me your hand! :D', (10, height - 10), font, 1, (0, 0, 0), 5, cv2.LINE_AA) #for better text cv2.LINE_AA; 4 = scale of font
 
