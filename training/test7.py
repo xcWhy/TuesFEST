@@ -11,6 +11,7 @@ while True:
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5) #the function
+
     for (x, y, w, h) in faces: # x, y, width, height of a recatngle
         cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 5)
         roi_gray = gray[y:y+h, x:x+w] #from y to y + h
