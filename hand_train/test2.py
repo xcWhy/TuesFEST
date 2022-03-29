@@ -42,9 +42,6 @@ def hand_sign(coords, landmarks_list, point):
 
     #if point == landmarks_list[8]:
 
-def to_pixel_coords():
-    pass
-
 
 while True:
     success, img = cap.read()
@@ -55,6 +52,7 @@ while True:
         color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(color)
         height, width, channel = img.shape
+        screen = height, width
         y_coord = []
         i = 0
 
@@ -66,24 +64,21 @@ while True:
 
                 normalizedLandmark = handLandmarks.landmark[point]
                 print(normalizedLandmark)
-                pixelCoordinatesLandmark = mp_draw._normalized_to_pixel_coordinates(normalizedLandmark.x,
-                                                                                        normalizedLandmark.y, height,
-                                                                                        width)
-                print(point)
-                print(pixelCoordinatesLandmark)
-                myTuple = pixelCoordinatesLandmark
-                print(sorted(pixelCoordinatesLandmark)) #problemo ne moje da sortira none
+
+                normCoords = normalizedLandmark.x, normalizedLandmark.y
+                pixelCoords = tuple(round(coord * dimension) for coord, dimension in zip(normCoords, screen))
+
+                print(pixelCoords)
 
                 print(str(point))
 
-                x, y = sorted(pixelCoordinatesLandmark)
+                x, y = sorted(pixelCoords)
 
                 if str(point) in all_hand_landmarks:
-                    pass
                     all_hand_landmarks[point] = y
                     print(all_hand_landmarks)
 
-                hand_sign(pixelCoordinatesLandmark, landmarks_list, point)
+                #hand_sign(, landmarks_list, point)
                 #print(all_hand_landmarks)
 
 
