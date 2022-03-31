@@ -12,7 +12,7 @@ hands = mp_hands.Hands()
 
 #HandLandmark.
 
-def hand_sign(handMark):
+def hand_sign(handMark, thumb):
     num_Hands = []
 
     if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
@@ -27,19 +27,24 @@ def hand_sign(handMark):
     if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
         num_Hands.append(1)
 
+    if thumb['HandLandmark.THUMB_TIP'] > thumb['HandLandmark.THUMB_IP']:
+        num_Hands.append(1)
+
     #print(num_Hands)
 
     num = num_Hands.count(1)
-    print(num)
+    #print(num)
 
 
+thumb = {
+    "HandLandmark.THUMB_CMC": 0,  # 1
+    "HandLandmark.THUMB_MCP": 0,  # 2
+    "HandLandmark.THUMB_IP": 0,  # 3
+    "HandLandmark.THUMB_TIP": 0,  # 4
+}
 
-all_hand_landmarks = {
-    "HandLandmark.WRIST": 0, #0
-    "HandLandmark.THUMB_CMC": 0, #1
-    "HandLandmark.THUMB_MCP": 0, #2
-    "HandLandmark.THUMB_IP": 0, #3
-    "HandLandmark.THUMB_TIP": 0, #4
+long_fingers = {
+    "HandLandmark.WRIST": 0,  # 0
     "HandLandmark.INDEX_FINGER_MCP": 0, #5
     "HandLandmark.INDEX_FINGER_PIP": 0, #6
     "HandLandmark.INDEX_FINGER_DIP": 0, #7
@@ -63,17 +68,26 @@ while True:
     success, img = cap.read()
     #print(success)
 
+
     with mp_hands.Hands(static_image_mode=True, max_num_hands=4) as hands:
         color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(color)
         height, width, channel = img.shape
         screen = height, width
-        y_coord = []
-        i = 0
-
 
 
     if results.multi_hand_landmarks:
+        handsType = []
+
+        for hand in results.multi_handedness:
+            # print(hand)
+            # print(hand.classification)
+            # print(hand.classification[0])
+            handType = hand.classification[0].label
+            handsType.append(handType)
+
+        print(handsType)
+
         for handLandmarks in results.multi_hand_landmarks:
             for point in mp_hands.HandLandmark:
 
@@ -87,13 +101,16 @@ while True:
 
                 #print(point)
 
-                if str(point) in all_hand_landmarks:
+                if str(point) in long_fingers:
                     #print("HEY U HERE?")
-                    all_hand_landmarks[str(point)] = y
+                    long_fingers[str(point)] = y
                     #print(all_hand_landmarks)
                     #print(all_hand_landmarks[point])
 
-                hand_sign(all_hand_landmarks)
+                if str(point) in thumb:
+                    thumb[str(point)] = x
+
+                hand_sign(long_fingers, thumb)
                 #print(all_hand_landmarks)
 
 
@@ -105,8 +122,7 @@ while True:
                 cx, cy = int(lm.x * width), int(lm.y * height)
             mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-
-
+    img = cv2.flip(img, 1)
     cv2.imshow("Camera", img)
     if cv2.waitKey(1) == ord('q'):
         break
