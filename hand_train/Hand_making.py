@@ -12,28 +12,37 @@ hands = mp_hands.Hands()
 
 #HandLandmark.
 
-def hand_sign(handMark, thumb):
+def hand_sign(handMark, thumb, handsType):
     num_Hands = []
 
-    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
-        num_Hands.append(1)
+    for i in range(0, len(handsType)):
 
-    if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
-        num_Hands.append(1)
+        if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+            num_Hands.append(1)
 
-    if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
-        num_Hands.append(1)
+        if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
+            num_Hands.append(1)
 
-    if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
-        num_Hands.append(1)
+        if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
+            num_Hands.append(1)
 
-    if thumb['HandLandmark.THUMB_TIP'] > thumb['HandLandmark.THUMB_IP']:
-        num_Hands.append(1)
+        if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
+            num_Hands.append(1)
+
+        if handsType[i] == 'Right':
+
+            if thumb['HandLandmark.THUMB_TIP'] > thumb['HandLandmark.THUMB_IP']:
+                num_Hands.append(1)
+
+        if handsType[i] == 'Left':
+
+            if thumb['HandLandmark.THUMB_TIP'] < thumb['HandLandmark.THUMB_IP']:
+                num_Hands.append(1)
 
     #print(num_Hands)
 
     num = num_Hands.count(1)
-    #print(num)
+    print(num)
 
 
 thumb = {
@@ -69,7 +78,7 @@ while True:
     #print(success)
 
 
-    with mp_hands.Hands(static_image_mode=True, max_num_hands=4) as hands:
+    with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
         color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(color)
         height, width, channel = img.shape
@@ -77,16 +86,29 @@ while True:
 
 
     if results.multi_hand_landmarks:
+        #print(results.multi_hand_landmarks)
         handsType = []
 
         for hand in results.multi_handedness:
+            #print(results.multi_handedness)
             # print(hand)
             # print(hand.classification)
             # print(hand.classification[0])
             handType = hand.classification[0].label
             handsType.append(handType)
 
-        print(handsType)
+        #print(handsType)
+
+        for i in range(0, len(handsType)):
+            if handsType[i] == 'Left':
+                handsType[i] = 'Right'
+                continue
+
+            if handsType[i] == 'Right':
+                handsType[i] = 'Left'
+                continue
+
+        #print("-----", handsType)
 
         for handLandmarks in results.multi_hand_landmarks:
             for point in mp_hands.HandLandmark:
@@ -110,7 +132,7 @@ while True:
                 if str(point) in thumb:
                     thumb[str(point)] = x
 
-                hand_sign(long_fingers, thumb)
+                hand_sign(long_fingers, thumb, handsType)
                 #print(all_hand_landmarks)
 
 
