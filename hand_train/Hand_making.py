@@ -14,11 +14,23 @@ hands = mp_hands.Hands()
 
 def hand_sign(handMark):
     num_Hands = []
-    #print("pok----", handMark['HandLandmark.INDEX_FINGER_TIP']) #STOInostite ne se promenqt
-    #print("pok222----", handMark['HandLandmark.INDEX_FINGER_TIP'])
+
     if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
-        #print("YES - PRYST NAGORE------------------------------------------")
         num_Hands.append(1)
+
+    if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
+        num_Hands.append(1)
+
+    if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
+        num_Hands.append(1)
+
+    if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
+        num_Hands.append(1)
+
+    #print(num_Hands)
+
+    num = num_Hands.count(1)
+    print(num)
 
 
 
@@ -87,11 +99,11 @@ while True:
 
 
     if results.multi_hand_landmarks:
-        for hand_dotes in results.multi_hand_landmarks:
-            for lm in hand_dotes.landmark:
+        for hand_landmarks in results.multi_hand_landmarks:
+            for lm in hand_landmarks.landmark:
                 height, width, channel = img.shape
                 cx, cy = int(lm.x * width), int(lm.y * height)
-            mp_draw.draw_landmarks(img, hand_dotes, mp_hands.HAND_CONNECTIONS)
+            mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
 
 
@@ -103,15 +115,5 @@ cap.release()
 cv2.destroyAllWindows()
 
 '''
-    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
-        #print("YES - PRYST NAGORE------------------------------------------")
-        num_Hands.append(1)
-    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
-        #print("YES - PRYST NAGORE------------------------------------------")
-        num_Hands.append(1)
-    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
-        #print("YES - PRYST NAGORE------------------------------------------")
-        num_Hands.append(1)
-        
-    print(num_Hands)
+    
 '''
