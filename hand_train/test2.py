@@ -13,13 +13,14 @@ hands = mp_hands.Hands()
 #HandLandmark.
 
 def hand_sign(handMark):
-    i = 0
+    num_Hands = []
     #print("pok----", handMark['HandLandmark.INDEX_FINGER_TIP']) #STOInostite ne se promenqt
-    #print("sre----", handMark['HandLandmark.MIDDLE_FINGER_TIP'])
-    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_TIP']:
-        print("YES - PRYST NAGORE------------------------------------------")
-        i += 1
-        print(i)
+    #print("pok222----", handMark['HandLandmark.INDEX_FINGER_TIP'])
+    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+        #print("YES - PRYST NAGORE------------------------------------------")
+        num_Hands.append(1)
+
+
 
 all_hand_landmarks = {
     "HandLandmark.WRIST": 0, #0
@@ -102,5 +103,15 @@ cap.release()
 cv2.destroyAllWindows()
 
 '''
-
+    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+        #print("YES - PRYST NAGORE------------------------------------------")
+        num_Hands.append(1)
+    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+        #print("YES - PRYST NAGORE------------------------------------------")
+        num_Hands.append(1)
+    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+        #print("YES - PRYST NAGORE------------------------------------------")
+        num_Hands.append(1)
+        
+    print(num_Hands)
 '''
