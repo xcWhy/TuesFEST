@@ -18,4 +18,4 @@
 - Python
 
 # Автори на проекта:
-Елена Чернева - самостоятелно работя, xcWhy в github (https://github.com/xcWhy)
+Елена Чернева - самостоятелнa работa, xcWhy в github (https://github.com/xcWhy)
