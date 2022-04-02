@@ -3,6 +3,7 @@ import mediapipe as mp
 import time
 import os
 
+
 cap = cv2.VideoCapture(0)
 
 mp_hands = mp.solutions.hands
@@ -13,44 +14,65 @@ hands = mp_hands.Hands()
 folderPath = "../imgs_fingers"
 myList = os.listdir(folderPath)
 
+SUMA = 0
+K = 0
 
 #HandLandmark.
 
-def hand_sign(handMark, thumb, handsType):
+def right_hand(handMark, thumb): #right hand
     num_Hands = []
 
-    for i in range(0, len(handsType)):
+    if thumb['HandLandmark.THUMB_TIP'] > thumb['HandLandmark.THUMB_IP']:
+        num_Hands.append(1)
+        #print("thumbbb right")
 
-        if handsType[i] == 'Right':
+    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+        num_Hands.append(1)
 
-            if thumb['HandLandmark.THUMB_TIP'] > thumb['HandLandmark.THUMB_IP']:
-                num_Hands.append(1)
-                print("thumbbb right")
+    if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
+        num_Hands.append(1)
 
-        if handsType[i] == 'Left':
+    if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
+        num_Hands.append(1)
 
-            if thumb['HandLandmark.THUMB_TIP'] < thumb['HandLandmark.THUMB_IP']:
-                num_Hands.append(1)
-                print("thumbbb lefttt")
+    if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
+        num_Hands.append(1)
 
-        if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
-            num_Hands.append(1)
+    num = num_Hands.count(1)
 
-        if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
-            num_Hands.append(1)
+    #cv2.putText(img, f'Right hand: {int(num)}', (400, 50), cv2.FONT_ITALIC, 1, 255, 1)
+    #print(num)
+    return num
 
-        if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
-            num_Hands.append(1)
 
-        if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
-            num_Hands.append(1)
+
+
+def left_hand(handMark, thumb): #left hand
+    num_Hands = []
+
+    if thumb['HandLandmark.THUMB_TIP'] < thumb['HandLandmark.THUMB_IP']:
+        num_Hands.append(1)
+        #print("thumbbb lefttt")
+
+    if handMark['HandLandmark.INDEX_FINGER_TIP'] < handMark['HandLandmark.INDEX_FINGER_PIP']:
+        num_Hands.append(1)
+
+    if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
+        num_Hands.append(1)
+
+    if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
+        num_Hands.append(1)
+
+    if handMark['HandLandmark.PINKY_TIP'] < handMark['HandLandmark.PINKY_PIP']:
+        num_Hands.append(1)
 
     #print(num_Hands)
 
     num = num_Hands.count(1)
 
-    cv2.putText(img, f'Fingers: {int(num)}', (250, 50), cv2.FONT_ITALIC, 1, 255, 1)
+    #cv2.putText(img, f'Left hand: {int(num)}', (100, 50), cv2.FONT_ITALIC, 1, 255, 1)
     #print(num)
+    return num
 
 
 thumb = {
@@ -80,9 +102,12 @@ long_fingers = {
     "HandLandmark.PINKY_TIP": 0 #20
 }
 
+listFin = [0]
 
 with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
+
     while True:
+
         success, img = cap.read()
         # print(success)
         img = cv2.flip(img, 1)
@@ -101,7 +126,11 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                 for lm in hand_landmarks.landmark:
                     height, width, channel = img.shape
                     cx, cy = int(lm.x * width), int(lm.y * height)
-                mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS,
+                                        mp_draw.DrawingSpec(color=(121, 22, 76), thickness=2, circle_radius=4), #connecting lines
+                                        mp_draw.DrawingSpec(color=(121, 44, 250), thickness=2, circle_radius=2) #circle
+                                       )
+
 
             for hand in results.multi_handedness:
                 #print(results.multi_handedness)
@@ -146,16 +175,60 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                     if str(point) in thumb:
                         thumb[str(point)] = x
 
-                    hand_sign(long_fingers, thumb, handsType)
+
+                    numFingers = 0
+                    for i in range(0, len(handsType)):
+                        if handsType[i] == 'Right':
+                            numFingers += right_hand(long_fingers, thumb)
+
+                        elif handsType[i] == 'Left':
+                            numFingers += left_hand(long_fingers, thumb)
+
+
+
+            if K == 0:
+                listFin[0] = numFingers
+                cv2.putText(img, f'Fingers: {int(listFin[0])}', (50, 50), cv2.FONT_ITALIC, 1, 255, 1)
+
+            if K > 0:
+                #print(listFin)
+                cv2.putText(img, f'Fingers: {int(listFin[0])}', (50, 50), cv2.FONT_ITALIC, 1, 255, 1)
+                listFin[1] = numFingers
+                cv2.putText(img, f'symbol: +', (50, 100), cv2.FONT_ITALIC, 1, 255, 1)
+                cv2.putText(img, f'Fingers: {int(listFin[1])}', (50, 150), cv2.FONT_ITALIC, 1, 255, 1)
+
+            if K == -1:
+                SUMA = sum(listFin)
+                cv2.putText(img, f'Fingers: {int(listFin[0])}', (50, 50), cv2.FONT_ITALIC, 1, 255, 1) # pyrvo chislo
+                cv2.putText(img, f'symbol: +', (50, 100), cv2.FONT_ITALIC, 1, 255, 1) # +
+                cv2.putText(img, f'Fingers: {int(listFin[1])}', (50, 150), cv2.FONT_ITALIC, 1, 255, 1) #vtoro chislo
+                cv2.putText(img, f'sum = {SUMA}', (50, 200), cv2.FONT_ITALIC, 1, 255, 1) #sum
+
+            if cv2.waitKey(1) & 0xff == ord('='):
+                K += 1
+                listFin.append(0)
+                #print(listFin)
+
+
+            if cv2.waitKey(1) & 0xff == ord('z'):
+                K = -1
+
+
                     #print(all_hand_landmarks)
 
         cv2.imshow("Camera", img)
-        if cv2.waitKey(1) == ord('q'):
+
+
+
+        if cv2.waitKey(1) & 0xff == ord('-'):
+            print("-")
+
+        if cv2.waitKey(1) & 0xff == ord('q'):
             break
 
 cap.release()
 cv2.destroyAllWindows()
 
 '''
-    
+
 '''
