@@ -103,7 +103,8 @@ long_fingers = {
     "HandLandmark.PINKY_TIP": 0 #20
 }
 
-listFin = [0]
+listFin = [0, 0]
+symbol = '?'
 
 with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
@@ -122,6 +123,11 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
         img = cv2.rectangle(img, (1000, 0), (1500, width), (0, 128, 128), -1)
 
+        cv2.putText(img, f'Fingers: {int(listFin[0])}', (1050, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
+        cv2.putText(img, f'symbol: {symbol}', (1050, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
+        cv2.putText(img, f'Fingers: {int(listFin[1])}', (1050, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
+        if K == -1:
+            cv2.putText(img, f'Equal = {SUMA}', (1050, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
 
         if results.multi_hand_landmarks:
             #print(results.multi_hand_landmarks)
@@ -189,46 +195,41 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                         elif handsType[i] == 'Left':
                             numFingers += left_hand(long_fingers, thumb)
 
-
-
             if K == 0:
                 listFin[0] = numFingers
-                cv2.putText(img, f'Fingers: {int(listFin[0])}', (1000, 50), cv2.FONT_ITALIC, 1, 255, 1)
 
-            if K > 0:
-                #print(listFin)
-                cv2.putText(img, f'Fingers: {int(listFin[0])}', (50, 50), cv2.FONT_ITALIC, 1, 255, 1)
+            elif K == 1:
                 listFin[1] = numFingers
-                cv2.putText(img, f'symbol: +', (50, 100), cv2.FONT_ITALIC, 1, 255, 1)
-                cv2.putText(img, f'Fingers: {int(listFin[1])}', (50, 150), cv2.FONT_ITALIC, 1, 255, 1)
-
-            if K == -1:
+                symbol = '+'
                 SUMA = sum(listFin)
-                cv2.putText(img, f'Fingers: {int(listFin[0])}', (50, 50), cv2.FONT_ITALIC, 1, 255, 1) # pyrvo chislo
-                cv2.putText(img, f'symbol: +', (50, 100), cv2.FONT_ITALIC, 1, 255, 1) # +
-                cv2.putText(img, f'Fingers: {int(listFin[1])}', (50, 150), cv2.FONT_ITALIC, 1, 255, 1) #vtoro chislo
-                cv2.putText(img, f'sum = {SUMA}', (50, 200), cv2.FONT_ITALIC, 1, 255, 1) #sum
 
-            if keyboard.is_pressed('+'):
-                K += 1
-                listFin.append(0)
-                #print(listFin)
+            elif K == 2:
+                listFin[1] = numFingers
+                symbol = '-'
+                SUMA = listFin[0] - listFin[1]
+                if SUMA < 0:
+                    SUMA = ':('
 
+        if keyboard.is_pressed('+'):
+            K = 1
 
-            if keyboard.is_pressed('e'):
-                K = -1
+        if keyboard.is_pressed('Enter'):
+            K = -1
+
+        if keyboard.is_pressed('-'):
+            K = 2
+
+        if keyboard.is_pressed('r'):
+            K = 0
+            listFin = [0, 0]
+            symbol = '?'
 
 
                     #print(all_hand_landmarks)
 
         cv2.imshow("Camera", img)
 
-
-
-        if keyboard.is_pressed('-'):
-            print("-")
-
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 cap.release()
