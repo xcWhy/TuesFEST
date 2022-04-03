@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import time
 import os
+import keyboard
 
 
 cap = cv2.VideoCapture(0)
@@ -114,8 +115,12 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
         color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(color)
+        img = cv2.resize(img, (0, 0), fx=2, fy=2)
+
         height, width, channel = img.shape
         screen = height, width
+
+        img = cv2.rectangle(img, (1000, 0), (1500, width), (0, 128, 128), -1)
 
 
         if results.multi_hand_landmarks:
@@ -188,7 +193,7 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
             if K == 0:
                 listFin[0] = numFingers
-                cv2.putText(img, f'Fingers: {int(listFin[0])}', (50, 50), cv2.FONT_ITALIC, 1, 255, 1)
+                cv2.putText(img, f'Fingers: {int(listFin[0])}', (1000, 50), cv2.FONT_ITALIC, 1, 255, 1)
 
             if K > 0:
                 #print(listFin)
@@ -204,13 +209,13 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                 cv2.putText(img, f'Fingers: {int(listFin[1])}', (50, 150), cv2.FONT_ITALIC, 1, 255, 1) #vtoro chislo
                 cv2.putText(img, f'sum = {SUMA}', (50, 200), cv2.FONT_ITALIC, 1, 255, 1) #sum
 
-            if cv2.waitKey(1) & 0xff == ord('='):
+            if keyboard.is_pressed('+'):
                 K += 1
                 listFin.append(0)
                 #print(listFin)
 
 
-            if cv2.waitKey(1) & 0xff == ord('z'):
+            if keyboard.is_pressed('e'):
                 K = -1
 
 
@@ -220,10 +225,10 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
 
 
-        if cv2.waitKey(1) & 0xff == ord('-'):
+        if keyboard.is_pressed('-'):
             print("-")
 
-        if cv2.waitKey(1) & 0xff == ord('q'):
+        if cv2.waitKey(1) == ord('q'):
             break
 
 cap.release()
