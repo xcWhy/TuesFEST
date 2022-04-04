@@ -1,6 +1,5 @@
 import cv2
 import mediapipe as mp
-import time
 import os
 import keyboard
 
@@ -116,7 +115,7 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
         color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(color)
-        img = cv2.resize(img, (0, 0), fx=2, fy=2)
+        #img = cv2.resize(img, (0, 0), fx=2, fy=2)
 
         height, width, channel = img.shape
         screen = height, width
