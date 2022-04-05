@@ -22,6 +22,9 @@ for method in methods:
 
     cv2.rectangle(img2, location, bottom_right, (0, 255, 0), 5) #255 - black for short
 
+    while True:
+
+
     cv2.imshow('Match', img2)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

@@ -53,42 +53,36 @@ for frame in cap:
 '''
 
 import cv2
-import numpy as np
-import time
 
-#name = 'plus2.jpg'
-template = cv2.imread('C:\\Users\\eli\\Desktop\\tets\\imgs_fingers\\plus4.jpg', 0)
-face_w, face_h = template.shape[::-1]
+template = cv2.imread('C:\\Users\\eli\\Desktop\\tets\\imgs_fingers\\plus6.jpg')
+template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+h, w = template.shape
 
-cv2.namedWindow('image')
+#print(h)
 
 cap = cv2.VideoCapture(0)
 
-threshold = 0.8
-ret = True
-
-while ret:
+while True:
     ret, img = cap.read()
 
-    #flip the image  ! optional
     #img = cv2.flip(img,1)
+    print(ret)
+    print(img)
 
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCORR)
+    result = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF)
 
-    if len(res):
-        #print(res)
-        #time.sleep(0.1)
-        location = np.where(res >= threshold)
-        #print(location)
-        for pt in zip(*location[::-1]):
-            #puting  rectangle on recognized erea
-            cv2.rectangle(img, pt, (pt[0] + face_w, pt[1] + face_h), (0,0,255), 2)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
 
-    #print(res)
-    cv2.imshow('image', img)
+    location = max_loc
+
+    cv2.rectangle(img, location, (location[0] + w, location[1] + h), (0, 128, 0), 1)
+
+    cv2.imshow("Camera", img)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+cap.release()
 cv2.destroyAllWindows()
