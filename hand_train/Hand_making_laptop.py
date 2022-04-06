@@ -127,8 +127,8 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
         img = cv2.rectangle(img, (450, 0), (1000, width), (0, 128, 128), -1)
 
-        resultIMG = cv2.matchTemplate(img_gray, plus_img, cv2.TM_CCOEFF)
-        print(resultIMG)
+        #resultIMG = cv2.matchTemplate(img_gray, plus_img, cv2.TM_CCOEFF)
+        #print(resultIMG)
 
         cv2.putText(img, f'Fingers: {int(listFin[0])}', (450, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
         cv2.putText(img, f'symbol: {symbol}', (450, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
