@@ -9,20 +9,20 @@ cap = cv2.VideoCapture(0)
 mp_hands = mp.solutions.hands
 mp_draw = mp.solutions.drawing_utils
 
-hands = mp_hands.Hands()
-
 #folderPath = "../imgs_fingers"
 #myList = os.listdir(folderPath)
 
-plus_img = cv2.imread('..\imgs_fingers\plus8.jpg')
-minus_img = cv2.imread('..\imgs_fingers\minus1.jpg')
-equal_img = cv2.imread('..\imgs_fingers\equal1.jpg')
+plus_img = cv2.imread('..\imgs_fingers\plus8c.png', 1)
+minus_img = cv2.imread('..\imgs_fingers\minus4.jpg', 1)
+equal_img = cv2.imread('..\imgs_fingers\equal2.jpg', 1)
 
 plus_img = cv2.cvtColor(plus_img, cv2.COLOR_BGR2GRAY)
 minus_img = cv2.cvtColor(minus_img, cv2.COLOR_BGR2GRAY)
 equal_img = cv2.cvtColor(equal_img, cv2.COLOR_BGR2GRAY)
 
 h, w = plus_img.shape
+h2, w2 = minus_img.shape
+h3, w3 = equal_img.shape
 
 threshold = 0.6
 
@@ -117,9 +117,9 @@ long_fingers = {
 listFin = [0, 0]
 symbol = '?'
 
-with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
+while True:
 
-    while True:
+    with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
         # img settings
 
         success, img = cap.read()
@@ -137,6 +137,12 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
 
         result_plus = cv2.matchTemplate(img_gray, plus_img, cv2.TM_CCOEFF_NORMED)
         min_val_plus, max_val_plus, min_loc_plus, max_loc_plus = cv2.minMaxLoc(result_plus)
+
+        result_minus = cv2.matchTemplate(img_gray, minus_img, cv2.TM_CCOEFF_NORMED)
+        min_val_minus, max_val_minus, min_loc_minus, max_loc_minus = cv2.minMaxLoc(result_minus)
+
+        result_equal = cv2.matchTemplate(img_gray, equal_img, cv2.TM_CCOEFF_NORMED)
+        min_val_equal, max_val_equal, min_loc_equal, max_loc_equal = cv2.minMaxLoc(result_equal)
 
         img = cv2.rectangle(img, (1000, 0), (1500, width), (156, 143, 233), -1)
 
@@ -221,18 +227,18 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                 listFin[1] = numFingers
                 symbol = '-'
                 SUMA = listFin[0] - listFin[1]
-                if SUMA < 0:
-                    SUMA = ':('
+                #if SUMA < 0:
+                    #SUMA = ':('
 
         if keyboard.is_pressed('+') or max_val_plus >= threshold:
             K = 1
             #top_left = max_loc_plus
             #cv2.rectangle(img, top_left, (top_left[0] + w, top_left[1] + h), (0, 128, 0), 1)
 
-        if keyboard.is_pressed('Enter'):
+        if keyboard.is_pressed('Enter') or max_val_equal >= threshold:
             K = -1
 
-        if keyboard.is_pressed('-'):
+        if keyboard.is_pressed('-') or max_val_minus >= threshold:
             K = 2
 
         if keyboard.is_pressed('r'):
