@@ -144,11 +144,11 @@ while True:
         result_equal = cv2.matchTemplate(img_gray, equal_img, cv2.TM_CCOEFF_NORMED)
         min_val_equal, max_val_equal, min_loc_equal, max_loc_equal = cv2.minMaxLoc(result_equal)
 
-        img = cv2.rectangle(img, (450, 0), (1000, width), (0, 128, 128), -1)
+        img = cv2.rectangle(img, (450, 0), (1000, width), (156, 143, 233), -1)
 
-        cv2.putText(img, f'Fingers: {int(listFin[0])}', (1050, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
-        cv2.putText(img, f'symbol: {symbol}', (1050, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
-        cv2.putText(img, f'Fingers: {int(listFin[1])}', (1050, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
+        cv2.putText(img, f'Fingers: {int(listFin[0])}', (450, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
+        cv2.putText(img, f'symbol: {symbol}', (450, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
+        cv2.putText(img, f'Fingers: {int(listFin[1])}', (450, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
 
         if K == -1:
             cv2.putText(img, f'Equal = {SUMA}', (1050, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
