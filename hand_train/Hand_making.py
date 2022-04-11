@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-import os
+# import os
 import keyboard
 
 
@@ -161,8 +161,8 @@ while True:
                 # print(hand)
                 # print(hand.classification)
                 # print(hand.classification[0])
-                handType = hand.classification[0].label
-                handsType.append(handType)
+                hType = hand.classification[0].label
+                handsType.append(hType)
 
             #print(handsType)
 
@@ -181,8 +181,8 @@ while True:
                 for lm in handLandmarks.landmark:
                     cx, cy = int(lm.x * width), int(lm.y * height)
                 mp_draw.draw_landmarks(img, handLandmarks, mp_hands.HAND_CONNECTIONS,
-                                        mp_draw.DrawingSpec(color=(121, 22, 76), thickness=2, circle_radius=4), #connecting lines
-                                        mp_draw.DrawingSpec(color=(121, 44, 250), thickness=2, circle_radius=2) #circle
+                                        mp_draw.DrawingSpec(color=(121, 22, 76), thickness=2, circle_radius=4), # connecting lines
+                                        mp_draw.DrawingSpec(color=(121, 44, 250), thickness=2, circle_radius=2) # circle
                                        )
 
                 for point in mp_hands.HandLandmark:
@@ -204,14 +204,14 @@ while True:
                         thumb[str(point)] = x
 
 
-                    numFingers = 0
+                numFingers = 0
 
-                    for i in range(0, len(handsType)):
-                        if handsType[i] == 'Right':
-                            numFingers += right_hand(long_fingers, thumb)
+                for i in range(0, len(handsType)):
+                    if handsType[i] == 'Right':
+                        numFingers += right_hand(long_fingers, thumb)
 
-                        elif handsType[i] == 'Left':
-                            numFingers += left_hand(long_fingers, thumb)
+                    elif handsType[i] == 'Left':
+                        numFingers += left_hand(long_fingers, thumb)
 
                     #print(numFingers)
 
@@ -230,29 +230,29 @@ while True:
                 #if SUMA < 0:
                     #SUMA = ':('
 
-        if keyboard.is_pressed('+') or max_val_plus >= threshold:
-            K = 1
-            #top_left = max_loc_plus
-            #cv2.rectangle(img, top_left, (top_left[0] + w, top_left[1] + h), (0, 128, 0), 1)
+    if keyboard.is_pressed('+') or max_val_plus >= threshold:
+        K = 1
+        #top_left = max_loc_plus
+        #cv2.rectangle(img, top_left, (top_left[0] + w, top_left[1] + h), (0, 128, 0), 1)
 
-        if keyboard.is_pressed('Enter') or max_val_equal >= threshold:
-            K = -1
+    if keyboard.is_pressed('Enter') or max_val_equal >= threshold:
+        K = -1
 
-        if keyboard.is_pressed('-') or max_val_minus >= threshold:
-            K = 2
+    if keyboard.is_pressed('-') or max_val_minus >= threshold:
+        K = 2
 
-        if keyboard.is_pressed('r'):
-            K = 0
-            listFin = [0, 0]
-            symbol = '?'
+    if keyboard.is_pressed('r'):
+        K = 0
+        listFin = [0, 0]
+        symbol = '?'
 
 
                     #print(all_hand_landmarks)
 
-        cv2.imshow("Camera", img)
+    cv2.imshow("Camera", img)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 cap.release()
 cv2.destroyAllWindows()

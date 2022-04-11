@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-import os
+# import os
 import keyboard
 
 
@@ -9,15 +9,22 @@ cap = cv2.VideoCapture(0)
 mp_hands = mp.solutions.hands
 mp_draw = mp.solutions.drawing_utils
 
-plus_img = cv2.imread('C:\\Users\\eli\\Desktop\\tets\\imgs_fingers\\plus2.jpg', 0)
+#folderPath = "../imgs_fingers"
+#myList = os.listdir(folderPath)
 
-hands = mp_hands.Hands()
+plus_img = cv2.imread('..\imgs_fingers\plus8c.png', 1)
+minus_img = cv2.imread('..\imgs_fingers\minus4.jpg', 1)
+equal_img = cv2.imread('..\imgs_fingers\equal2.jpg', 1)
 
-folderPath = "../imgs_fingers"
+plus_img = cv2.cvtColor(plus_img, cv2.COLOR_BGR2GRAY)
+minus_img = cv2.cvtColor(minus_img, cv2.COLOR_BGR2GRAY)
+equal_img = cv2.cvtColor(equal_img, cv2.COLOR_BGR2GRAY)
 
+h, w = plus_img.shape
+h2, w2 = minus_img.shape
+h3, w3 = equal_img.shape
 
-
-myList = os.listdir(folderPath)
+threshold = 0.6
 
 SUMA = 0
 K = 0
@@ -110,53 +117,52 @@ long_fingers = {
 listFin = [0, 0]
 symbol = '?'
 
-with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
+while True:
 
-    while True:
+    with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
+        # img settings
 
         success, img = cap.read()
         # print(success)
         img = cv2.flip(img, 1)
 
-        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = hands.process(img_gray)
+        color = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        results = hands.process(color)
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
         #img = cv2.resize(img, (0, 0), fx=2, fy=2)
 
         height, width, channel = img.shape
         screen = height, width
 
+        result_plus = cv2.matchTemplate(img_gray, plus_img, cv2.TM_CCOEFF_NORMED)
+        min_val_plus, max_val_plus, min_loc_plus, max_loc_plus = cv2.minMaxLoc(result_plus)
+
+        result_minus = cv2.matchTemplate(img_gray, minus_img, cv2.TM_CCOEFF_NORMED)
+        min_val_minus, max_val_minus, min_loc_minus, max_loc_minus = cv2.minMaxLoc(result_minus)
+
+        result_equal = cv2.matchTemplate(img_gray, equal_img, cv2.TM_CCOEFF_NORMED)
+        min_val_equal, max_val_equal, min_loc_equal, max_loc_equal = cv2.minMaxLoc(result_equal)
+
         img = cv2.rectangle(img, (450, 0), (1000, width), (0, 128, 128), -1)
 
-        #resultIMG = cv2.matchTemplate(img_gray, plus_img, cv2.TM_CCOEFF)
-        #print(resultIMG)
+        cv2.putText(img, f'Fingers: {int(listFin[0])}', (1050, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
+        cv2.putText(img, f'symbol: {symbol}', (1050, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
+        cv2.putText(img, f'Fingers: {int(listFin[1])}', (1050, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
 
-        cv2.putText(img, f'Fingers: {int(listFin[0])}', (450, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
-        cv2.putText(img, f'symbol: {symbol}', (450, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
-        cv2.putText(img, f'Fingers: {int(listFin[1])}', (450, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
         if K == -1:
-            cv2.putText(img, f'Equal = {SUMA}', (450, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
+            cv2.putText(img, f'Equal = {SUMA}', (1050, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
 
         if results.multi_hand_landmarks:
             #print(results.multi_hand_landmarks)
             handsType = []
-
-            for hand_landmarks in results.multi_hand_landmarks:
-                for lm in hand_landmarks.landmark:
-                    height, width, channel = img.shape
-                    cx, cy = int(lm.x * width), int(lm.y * height)
-                mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS,
-                                        mp_draw.DrawingSpec(color=(121, 22, 76), thickness=2, circle_radius=4), #connecting lines
-                                        mp_draw.DrawingSpec(color=(121, 44, 250), thickness=2, circle_radius=2) #circle
-                                       )
-
-
             for hand in results.multi_handedness:
                 #print(results.multi_handedness)
                 # print(hand)
                 # print(hand.classification)
                 # print(hand.classification[0])
-                handType = hand.classification[0].label
-                handsType.append(handType)
+                hType = hand.classification[0].label
+                handsType.append(hType)
 
             #print(handsType)
 
@@ -165,13 +171,20 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                     handsType[i] = 'Right'
                     continue
 
-                if handsType[i] == 'Right':
+                elif handsType[i] == 'Right':
                     handsType[i] = 'Left'
-                    continue
 
             #print("-----", handsType)
 
             for handLandmarks in results.multi_hand_landmarks:
+
+                for lm in handLandmarks.landmark:
+                    cx, cy = int(lm.x * width), int(lm.y * height)
+                mp_draw.draw_landmarks(img, handLandmarks, mp_hands.HAND_CONNECTIONS,
+                                        mp_draw.DrawingSpec(color=(121, 22, 76), thickness=2, circle_radius=4), # connecting lines
+                                        mp_draw.DrawingSpec(color=(121, 44, 250), thickness=2, circle_radius=2) # circle
+                                       )
+
                 for point in mp_hands.HandLandmark:
 
                     normalizedLandmark = handLandmarks.landmark[point]
@@ -185,22 +198,22 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                     #print(point)
 
                     if str(point) in long_fingers:
-                        #print("HEY U HERE?")
                         long_fingers[str(point)] = y
-                        #print(all_hand_landmarks)
-                        #print(all_hand_landmarks[point])
 
                     if str(point) in thumb:
                         thumb[str(point)] = x
 
 
-                    numFingers = 0
-                    for i in range(0, len(handsType)):
-                        if handsType[i] == 'Right':
-                            numFingers += right_hand(long_fingers, thumb)
+                numFingers = 0
 
-                        elif handsType[i] == 'Left':
-                            numFingers += left_hand(long_fingers, thumb)
+                for i in range(0, len(handsType)):
+                    if handsType[i] == 'Right':
+                        numFingers += right_hand(long_fingers, thumb)
+
+                    elif handsType[i] == 'Left':
+                        numFingers += left_hand(long_fingers, thumb)
+
+                    #print(numFingers)
 
             if K == 0:
                 listFin[0] = numFingers
@@ -214,30 +227,32 @@ with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
                 listFin[1] = numFingers
                 symbol = '-'
                 SUMA = listFin[0] - listFin[1]
-                if SUMA < 0:
-                    SUMA = ':('
+                #if SUMA < 0:
+                    #SUMA = ':('
 
-        if keyboard.is_pressed('+'):
-            K = 1
+    if keyboard.is_pressed('+') or max_val_plus >= threshold:
+        K = 1
+        #top_left = max_loc_plus
+        #cv2.rectangle(img, top_left, (top_left[0] + w, top_left[1] + h), (0, 128, 0), 1)
 
-        if keyboard.is_pressed('Enter'):
-            K = -1
+    if keyboard.is_pressed('Enter') or max_val_equal >= threshold:
+        K = -1
 
-        if keyboard.is_pressed('-'):
-            K = 2
+    if keyboard.is_pressed('-') or max_val_minus >= threshold:
+        K = 2
 
-        if keyboard.is_pressed('r'):
-            K = 0
-            listFin = [0, 0]
-            symbol = '?'
+    if keyboard.is_pressed('r'):
+        K = 0
+        listFin = [0, 0]
+        symbol = '?'
 
 
                     #print(all_hand_landmarks)
 
-        cv2.imshow("Camera", img)
+    cv2.imshow("Camera", img)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 cap.release()
 cv2.destroyAllWindows()
