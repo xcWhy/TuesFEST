@@ -151,7 +151,7 @@ while True:
         cv2.putText(img, f'Fingers: {int(listFin[1])}', (450, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
 
         if K == -1:
-            cv2.putText(img, f'Equal = {SUMA}', (1050, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
+            cv2.putText(img, f'Equal = {SUMA}', (450, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
 
         if results.multi_hand_landmarks:
             #print(results.multi_hand_landmarks)
@@ -248,6 +248,9 @@ while True:
 
 
                     #print(all_hand_landmarks)
+
+    #cv2.namedWindow("Camera", cv2.WND_PROP_FULLSCREEN)
+    #cv2.setWindowProperty("Camera", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     cv2.imshow("Camera", img)
 

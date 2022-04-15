@@ -3,7 +3,6 @@ import mediapipe as mp
 # import os
 import keyboard
 
-
 cap = cv2.VideoCapture(0)
 
 mp_hands = mp.solutions.hands
@@ -144,7 +143,7 @@ while True:
         results = hands.process(color)
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        img = cv2.resize(img, (0, 0), fx=2, fy=2)
+        img = cv2.resize(img, (0, 0), fx=3, fy=2.1)
 
         height, width, channel = img.shape
         screen = height, width
@@ -161,14 +160,14 @@ while True:
         result_reset = cv2.matchTemplate(img_gray, reset_img, cv2.TM_CCOEFF_NORMED)
         min_val_reset, max_val_reset, min_loc_reset, max_loc_reset = cv2.minMaxLoc(result_reset)
 
-        img = cv2.rectangle(img, (1000, 0), (1500, width), (156, 143, 233), -1)
+        img = cv2.rectangle(img, (1600, 0), (width, height), (156, 143, 233), -1)
 
-        cv2.putText(img, f'- {int(listFin[0])} -', (1100, 50), cv2.FONT_ITALIC, 1, 255, 3)  # pyrvo chislo
-        cv2.putText(img, f'- {symbol} -', (1100, 200), cv2.FONT_ITALIC, 1, 255, 3)  # symbol
-        cv2.putText(img, f'- {int(listFin[1])} -', (1100, 350), cv2.FONT_ITALIC, 1, 255, 3)  # vtoro chislo
+        cv2.putText(img, f'- {int(listFin[0])} -', (1650, 100), cv2.FONT_ITALIC, 2, 255, 3)  # pyrvo chislo
+        cv2.putText(img, f'- {symbol} -', (1650, 300), cv2.FONT_ITALIC, 2, 255, 3)  # symbol
+        cv2.putText(img, f'- {int(listFin[1])} -', (1650, 500), cv2.FONT_ITALIC, 2, 255, 3)  # vtoro chislo
 
         if K == -1:
-            cv2.putText(img, f'Equal = {SUMA}', (1100, 500), cv2.FONT_ITALIC, 1, 255, 1)  # sum
+            cv2.putText(img, f'Equal = {SUMA}', (800, 100), cv2.FONT_ITALIC, 2, (0, 0, 255), 3)  # sum
 
         if results.multi_hand_landmarks:
             #print(results.multi_hand_landmarks)
