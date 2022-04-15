@@ -11,10 +11,10 @@ mp_draw = mp.solutions.drawing_utils
 #folderPath = "../imgs_fingers"
 #myList = os.listdir(folderPath)
 
-plus_img = cv2.imread('..\imgs_fingers\plus8c.png', 1)
-minus_img = cv2.imread('..\imgs_fingers\minus4.jpg', 1)
-equal_img = cv2.imread('..\imgs_fingers\equal2.jpg', 1)
-reset_img = cv2.imread('..\imgs_fingers\\reset2.jpg', 1)
+plus_img = cv2.imread('..\images\plus8c.png', 1)
+minus_img = cv2.imread('..\images\minus4.jpg', 1)
+equal_img = cv2.imread('..\images\equal2.jpg', 1)
+reset_img = cv2.imread('..\images\\reset2.jpg', 1)
 
 plus_img = cv2.cvtColor(plus_img, cv2.COLOR_BGR2GRAY)
 minus_img = cv2.cvtColor(minus_img, cv2.COLOR_BGR2GRAY)
