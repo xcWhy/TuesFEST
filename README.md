@@ -19,7 +19,7 @@
 - pip install opencv-python
 - pip install mediapipe
 - pip install keyboard
-3) Освен библиотеките на 
+! Командите се пишат в комадния прозорец cmd !
 
 # Инструкции за стартиране на проекта:
 ...
