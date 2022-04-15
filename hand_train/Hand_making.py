@@ -15,14 +15,17 @@ mp_draw = mp.solutions.drawing_utils
 plus_img = cv2.imread('..\imgs_fingers\plus8c.png', 1)
 minus_img = cv2.imread('..\imgs_fingers\minus4.jpg', 1)
 equal_img = cv2.imread('..\imgs_fingers\equal2.jpg', 1)
+reset_img = cv2.imread('..\imgs_fingers\\reset2.jpg', 1)
 
 plus_img = cv2.cvtColor(plus_img, cv2.COLOR_BGR2GRAY)
 minus_img = cv2.cvtColor(minus_img, cv2.COLOR_BGR2GRAY)
 equal_img = cv2.cvtColor(equal_img, cv2.COLOR_BGR2GRAY)
+reset_img = cv2.cvtColor(reset_img, cv2.COLOR_BGR2GRAY)
 
 h, w = plus_img.shape
 h2, w2 = minus_img.shape
 h3, w3 = equal_img.shape
+h4, w4 = equal_img.shape
 
 threshold = 0.6
 
@@ -33,6 +36,7 @@ K = 0
 
 def right_hand(handMark, thumb): #right hand
     num_Hands = []
+    middle_finger = 0
 
     if thumb['HandLandmark.THUMB_TIP'] > thumb['HandLandmark.THUMB_IP']:
         num_Hands.append(1)
@@ -52,6 +56,9 @@ def right_hand(handMark, thumb): #right hand
 
     num = num_Hands.count(1)
 
+    #if num and middle_finger == 1:
+        #return 'middle_finger'
+
     #cv2.putText(img, f'Right hand: {int(num)}', (400, 50), cv2.FONT_ITALIC, 1, 255, 1)
     #print(num)
     return num
@@ -61,6 +68,7 @@ def right_hand(handMark, thumb): #right hand
 
 def left_hand(handMark, thumb): #left hand
     num_Hands = []
+    middle_finger = 0
 
     if thumb['HandLandmark.THUMB_TIP'] < thumb['HandLandmark.THUMB_IP']:
         num_Hands.append(1)
@@ -71,6 +79,7 @@ def left_hand(handMark, thumb): #left hand
 
     if handMark['HandLandmark.MIDDLE_FINGER_TIP'] < handMark['HandLandmark.MIDDLE_FINGER_PIP']:
         num_Hands.append(1)
+        middle_finger = 1
 
     if handMark['HandLandmark.RING_FINGER_TIP'] < handMark['HandLandmark.RING_FINGER_PIP']:
         num_Hands.append(1)
@@ -81,6 +90,9 @@ def left_hand(handMark, thumb): #left hand
     #print(num_Hands)
 
     num = num_Hands.count(1)
+
+    #if num and middle_finger == 1:
+        #return 'middle_finger'
 
     #cv2.putText(img, f'Left hand: {int(num)}', (100, 50), cv2.FONT_ITALIC, 1, 255, 1)
     #print(num)
@@ -117,6 +129,8 @@ long_fingers = {
 listFin = [0, 0]
 symbol = '?'
 
+running = True
+
 while True:
 
     with mp_hands.Hands(static_image_mode=True, max_num_hands=6) as hands:
@@ -144,14 +158,17 @@ while True:
         result_equal = cv2.matchTemplate(img_gray, equal_img, cv2.TM_CCOEFF_NORMED)
         min_val_equal, max_val_equal, min_loc_equal, max_loc_equal = cv2.minMaxLoc(result_equal)
 
+        result_reset = cv2.matchTemplate(img_gray, reset_img, cv2.TM_CCOEFF_NORMED)
+        min_val_reset, max_val_reset, min_loc_reset, max_loc_reset = cv2.minMaxLoc(result_reset)
+
         img = cv2.rectangle(img, (1000, 0), (1500, width), (156, 143, 233), -1)
 
-        cv2.putText(img, f'Fingers: {int(listFin[0])}', (1050, 50), cv2.FONT_ITALIC, 1, 255, 1)  # pyrvo chislo
-        cv2.putText(img, f'symbol: {symbol}', (1050, 100), cv2.FONT_ITALIC, 1, 255, 1)  # symbol
-        cv2.putText(img, f'Fingers: {int(listFin[1])}', (1050, 150), cv2.FONT_ITALIC, 1, 255, 1)  # vtoro chislo
+        cv2.putText(img, f'- {int(listFin[0])} -', (1100, 50), cv2.FONT_ITALIC, 1, 255, 3)  # pyrvo chislo
+        cv2.putText(img, f'- {symbol} -', (1100, 200), cv2.FONT_ITALIC, 1, 255, 3)  # symbol
+        cv2.putText(img, f'- {int(listFin[1])} -', (1100, 350), cv2.FONT_ITALIC, 1, 255, 3)  # vtoro chislo
 
         if K == -1:
-            cv2.putText(img, f'Equal = {SUMA}', (1050, 200), cv2.FONT_ITALIC, 1, 255, 1)  # sum
+            cv2.putText(img, f'Equal = {SUMA}', (1100, 500), cv2.FONT_ITALIC, 1, 255, 1)  # sum
 
         if results.multi_hand_landmarks:
             #print(results.multi_hand_landmarks)
@@ -241,7 +258,7 @@ while True:
     if keyboard.is_pressed('-') or max_val_minus >= threshold:
         K = 2
 
-    if keyboard.is_pressed('r'):
+    if keyboard.is_pressed('r') or max_val_reset >= threshold:
         K = 0
         listFin = [0, 0]
         symbol = '?'
